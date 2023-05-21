@@ -39,10 +39,11 @@ class email_to_clean_text(BaseEstimator, TransformerMixin):
             text_list.append(' '.join(words_list))
         return text_list
 
-paths = ['/Users/drewjordan/Documents/AI-spam-detector/Spam-Email-Classifier/Data/archive/easy_ham/',
-         '/Users/drewjordan/Documents/AI-spam-detector/Spam-Email-Classifier/Data/archive/hard_ham/',
-         '/Users/drewjordan/Documents/AI-spam-detector/Spam-Email-Classifier/Data/archive/spam/']
 
+
+paths = ['archive/easy_ham/easy_ham',
+         'archive/hard_ham/hard_ham',
+         'archive/spam_2/spam_2']
 
 data = []
 labels = []
