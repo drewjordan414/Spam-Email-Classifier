@@ -1,3 +1,5 @@
+# code from https://www.kaggle.com/code/elhassouni/spam-email-classifier-98-accuracy#MODEL-BUILDING
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -151,3 +153,65 @@ X_test = vectorizer.transform(X_test).toarray()
 y_test = np.array(y_test).reshape(len(y_test), 1)
 
 # model building and training
+rfc = RandomForestClassifier(n_estimators=1200)
+rfc.fit(X_train, y_train)
+
+predictions = rfc.predict(X_test)
+
+# model evaluation
+print("accuracy score = {}%".format(round(accuracy_score(y_test, predictions)*100, 2)))
+print("f1 score = {}".format(round(f1_score(y_test, predictions), 2)))
+conf_mx = confusion_matrix(y_test, predictions)
+fig, axes = plt.subplots(1, 2, sharex=True, figsize=(18,7))
+fig.suptitle('Confusion matrix', c='r')
+sns.heatmap(conf_mx/np.sum(conf_mx), ax=axes[0], annot=True, 
+            fmt='.2%', cmap='Blues')
+axes[0].set_xlabel('Predicted labels')
+axes[0].set_ylabel('Actual labels')
+
+sns.heatmap(conf_mx, ax=axes[1], annot=True, cmap='Blues', fmt='')
+axes[1].set_xlabel('Predicted labels')
+axes[1].set_ylabel('Actual labels')
+plt.show()
+
+y_scores = cross_val_predict(rfc, X = X_train, y = y_train.reshape((1, len(y_train)))[0], cv=5, 
+                             method="predict_proba")
+
+precisions, recalls, thresholds = precision_recall_curve(y_train, y_scores[:,1])
+
+plt.figure(figsize=(10,4), dpi=200)
+plt.plot(thresholds, precisions[:-1], "b--", label="Precision", linewidth=2)
+plt.plot(thresholds, recalls[:-1], "g-", label="Recall", linewidth=2)
+plt.legend(loc="center right", fontsize=16) # Not shown in the book
+plt.xlabel("Threshold", fontsize=16)        # Not shown
+plt.grid(True) 
+plt.title("precision recall curve")
+plt.show()
+
+fpr, tpr, thresholds = roc_curve(y_train, y_scores[:,1])
+roc_auc_score(y_train, y_scores[:,1])
+
+plt.figure(figsize=(10, 6))
+plt.plot(fpr, tpr, linewidth=2, color='r')
+plt.plot([0, 1], [0, 1], 'k--')
+plt.axis([0, 1, 0, 1])
+plt.xlabel('False Positive Rate', fontsize=16)
+plt.ylabel('True Positive Rate', fontsize=16)
+plt.grid(True)
+plt.title("ROC Curve")
+plt.show()
+
+# data pipeline
+my_pipeline = Pipeline(steps=[
+    ('text', email_to_clean_text()),
+    ('vector', vectorizer),
+    ('model', rfc)])
+
+y1 = np.array(len(ham)*[0]+len(spam)*[1]).reshape(len(ham+spam), 1)
+
+y1
+my_pipeline.fit(ham+spam, y1)
+
+my_pipeline.predict([hard_ham[77]])
+
+
