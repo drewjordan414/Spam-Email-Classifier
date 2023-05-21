@@ -39,9 +39,10 @@ class email_to_clean_text(BaseEstimator, TransformerMixin):
             text_list.append(' '.join(words_list))
         return text_list
 
-paths = ['/kaggle/input/spamassassin-public-corpus/easy_ham/easy_ham/',
-         '/kaggle/input/spamassassin-public-corpus/hard_ham/hard_ham/',
-         '/kaggle/input/spamassassin-public-corpus/spam_2/spam_2/']
+paths = ['/Users/drewjordan/Documents/AI-spam-detector/Spam-Email-Classifier/Data/archive/easy_ham/',
+         '/Users/drewjordan/Documents/AI-spam-detector/Spam-Email-Classifier/Data/archive/hard_ham/',
+         '/Users/drewjordan/Documents/AI-spam-detector/Spam-Email-Classifier/Data/archive/spam/']
+
 
 data = []
 labels = []
