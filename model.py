@@ -104,3 +104,50 @@ class email_to_clean_text(BaseEstimator, TransformerMixin):
         return text_list
     
 email_to_text = email_to_clean_text()
+text_ham = email_to_text.transform(ham)
+text_spam = email_to_text.transform(spam)
+
+
+# Data Visualization
+text_easy_ham = email_to_text.transform(easy_ham)
+text_hard_ham = email_to_text.transform(hard_ham)
+data = [len(ham)/len(ham+spam), len(spam)/len(ham+spam)]
+labels = ['ham', 'spam']
+colors = ['green', 'red']
+plt.figure(figsize=(12, 5))
+plt.pie(data, labels = labels, autopct='%.0f%%', colors=colors)
+plt.show()
+plt.figure(figsize=(8, 5))
+sns.countplot(x = ['ham']*len(ham) + ['spam']*len(spam), palette=colors)
+plt.show()
+
+def plot_WordCloud(text_list):
+    unique_string=(" ").join(text_list)
+    wordcloud = WordCloud(width = 1000, height = 500).generate(unique_string)
+    plt.figure(figsize=(15,8))
+    plt.imshow(wordcloud)
+    plt.axis("off")
+    plt.show()
+
+plot_WordCloud(text_easy_ham)
+plot_WordCloud(text_hard_ham)
+plot_WordCloud(text_spam)
+
+# spilitting the dataset
+y = len(text_ham)*[0] + len(text_spam)*[1]
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(text_ham+text_spam, y,
+                                                    stratify=y, 
+                                                    test_size=0.2)
+
+
+# vectorization
+vectorizer = CountVectorizer(stop_words='english')
+vectorizer.fit(X_train)
+
+X_train = vectorizer.transform(X_train).toarray()
+y_train = np.array(y_train).reshape(len(y_train), 1)
+X_test = vectorizer.transform(X_test).toarray()
+y_test = np.array(y_test).reshape(len(y_test), 1)
+
+# model building and training
